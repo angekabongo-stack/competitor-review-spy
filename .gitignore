@@ -1,0 +1,29 @@
+# deps
+/node_modules
+/.pnp
+.pnp.js
+
+# build
+/.next/
+/out/
+
+# env — never commit real keys
+.env.local
+.env.production.local
+.env.development.local
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts

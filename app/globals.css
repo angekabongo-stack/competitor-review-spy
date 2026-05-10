@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #080808;
+  --red: #FF3232;
+  --cream: #F5F2EB;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: #080808;
+  color: #F5F2EB;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  background-color: #080808;
+  color: #F5F2EB;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #111; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #FF3232; }
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid #FF3232;
+  outline-offset: 2px;
+}
+
+/* Table striping */
+.comparison-table tbody tr:nth-child(even) {
+  background: rgba(245, 242, 235, 0.03);
+}
