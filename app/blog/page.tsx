@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function BlogPage() {
   const posts = getAllPosts();
-  const categories = [...new Set(posts.map((p) => p.category))];
+  const categories = Array.from(new Set(posts.map((p) => p.category)));
 
   return (
     <main className="min-h-screen bg-bg">

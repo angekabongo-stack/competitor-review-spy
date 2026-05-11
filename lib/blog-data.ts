@@ -143,7 +143,7 @@ Understanding exactly how far behind you are on **review velocity** is the first
 
 **Asking all customers equally.** Not all customers are equally happy. Asking a neutral or mildly dissatisfied customer for a review is an invitation for a 3-star. Target your review asks at customers who just gave positive signals — verbal compliments, repeat purchases, referrals.
 
-**Making it complicated.** Saying "please leave us a Google review" without a direct link converts poorly. A shortened link like `g.page/yourbusiness` removes all friction. Better yet, include the direct review form URL.
+**Making it complicated.** Saying "please leave us a Google review" without a direct link converts poorly. A shortened link like "g.page/yourbusiness" removes all friction. Better yet, include the direct review form URL.
 
 **Waiting too long.** Customer enthusiasm decays quickly. Ask within 2 hours of a positive experience for best results. Waiting a week reduces conversion by over 60%.
 
