@@ -17,16 +17,28 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://competitor-review-spy.com'),
-  title: 'Competitor Review Spy — See How Your Google Reviews Compare',
-  description:
-    'See exactly how your Google reviews stack up against competitors. Ratings, response rate, review volume. $9 one-time.',
-  alternates: {
-    canonical: 'https://competitor-review-spy.com',
+  title: {
+    default: 'Competitor Review Spy — See How Your Google Reviews Compare',
+    template: '%s | Competitor Review Spy',
   },
+  description:
+    'See exactly how your Google reviews stack up against competitors. Ratings, response rate, review volume and gap analysis. $9 one-time — instant results.',
+  keywords: [
+    'competitor review analysis',
+    'compare google reviews',
+    'google review competitor tool',
+    'how do my google reviews compare',
+    'google review benchmark',
+    'small business review comparison',
+    'check competitor google reviews',
+    'google review audit',
+  ],
+  robots: { index: true, follow: true },
+  alternates: { canonical: 'https://competitor-review-spy.com' },
   openGraph: {
     title: 'Competitor Review Spy — See How Your Google Reviews Compare',
     description:
-      'See exactly how your Google reviews stack up against competitors. Ratings, response rate, review volume. $9 one-time.',
+      'See exactly how your Google reviews stack up against competitors. $9 one-time.',
     type: 'website',
     url: 'https://competitor-review-spy.com',
     siteName: 'Competitor Review Spy',
@@ -34,8 +46,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Competitor Review Spy',
-    description:
-      'See exactly how your Google reviews stack up against competitors. $9 one-time.',
+    description: 'See how your Google reviews compare to competitors. $9 one-time.',
     site: '@competitorreviewspy',
   },
 };
@@ -47,34 +58,22 @@ const schemaMarkup = {
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Web',
   description:
-    'Compare your Google reviews against up to 3 competitors — ratings, response rate, review volume, and 5-star rate.',
-  offers: {
-    '@type': 'Offer',
-    price: '9.00',
-    priceCurrency: 'USD',
-  },
-  url: 'https://competitorreviewspy.com',
+    'Compare your Google reviews against up to 3 competitors — ratings, response rate, review volume and gap analysis for small business owners.',
+  audience: { '@type': 'Audience', audienceType: 'Small business owners' },
+  offers: { '@type': 'Offer', price: '9.00', priceCurrency: 'USD' },
+  url: 'https://competitor-review-spy.com',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${bebasNeue.variable} ${dmSans.variable}`}
-    >
+    <html lang="en" className={`${bebasNeue.variable} ${dmSans.variable}`}>
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }}
         />
       </head>
-      <body className="bg-bg font-body text-cream antialiased">
-        {children}
-      </body>
+      <body className="bg-bg font-body text-cream antialiased">{children}</body>
     </html>
   );
 }
