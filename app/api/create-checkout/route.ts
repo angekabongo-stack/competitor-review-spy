@@ -30,7 +30,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Database error' }, { status: 500 });
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
+    // Derive baseUrl from the incoming request so it works on any domain (local, preview, prod)
+    const host = req.headers.get('host') ?? 'localhost:3000';
+    const proto = req.headers.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https');
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? `${proto}://${host}`;
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
