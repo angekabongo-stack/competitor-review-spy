@@ -30,7 +30,7 @@ export default function BlogCard({ post }: { post: BlogPost }) {
           {post.excerpt}
         </p>
         <div className="flex items-center justify-between">
-          <span className="text-cream-muted/50 text-xs">{date}</span>
+          <span className="text-cream-muted text-xs">{date}</span>
           <span className="text-red-accent text-sm font-semibold group-hover:translate-x-1 transition-transform inline-block">
             Read →
           </span>

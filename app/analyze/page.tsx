@@ -156,9 +156,9 @@ export default function AnalyzePage() {
               value={form.business_url}
               onChange={update('business_url')}
               required
-              className="w-full bg-cream-faint border border-cream-border rounded-lg px-4 py-3 text-cream placeholder:text-cream-muted/40 focus:outline-none focus:border-red-accent transition-colors text-sm"
+              className="w-full bg-cream-faint border border-cream-border rounded-lg px-4 py-3 text-cream placeholder:text-cream-muted focus:outline-none focus:border-red-accent transition-colors text-sm"
             />
-            <p className="text-cream-muted/50 text-xs mt-1">
+            <p className="text-cream-muted text-xs mt-1">
               Tip: search your business on Google Maps and copy the URL from the browser bar.
             </p>
           </div>
@@ -180,7 +180,7 @@ export default function AnalyzePage() {
                   {required ? (
                     <span className="text-red-accent">*</span>
                   ) : (
-                    <span className="text-cream-muted/40">(optional)</span>
+                    <span className="text-cream-muted">(optional)</span>
                   )}
                 </label>
                 <input
@@ -188,7 +188,7 @@ export default function AnalyzePage() {
                   placeholder="https://www.google.com/maps/place/competitor/..."
                   value={form[field]}
                   onChange={update(field)}
-                  className="w-full bg-cream-faint border border-cream-border rounded-lg px-4 py-3 text-cream placeholder:text-cream-muted/40 focus:outline-none focus:border-red-accent transition-colors text-sm"
+                  className="w-full bg-cream-faint border border-cream-border rounded-lg px-4 py-3 text-cream placeholder:text-cream-muted focus:outline-none focus:border-red-accent transition-colors text-sm"
                 />
               </div>
             ))}
@@ -225,9 +225,9 @@ export default function AnalyzePage() {
               value={form.email}
               onChange={update('email')}
               required
-              className="w-full bg-cream-faint border border-cream-border rounded-lg px-4 py-3 text-cream placeholder:text-cream-muted/40 focus:outline-none focus:border-red-accent transition-colors text-sm"
+              className="w-full bg-cream-faint border border-cream-border rounded-lg px-4 py-3 text-cream placeholder:text-cream-muted focus:outline-none focus:border-red-accent transition-colors text-sm"
             />
-            <p className="text-cream-muted/50 text-xs mt-1">
+            <p className="text-cream-muted text-xs mt-1">
               Your report and a follow-up with growth tips will be sent here.
             </p>
           </div>
@@ -260,7 +260,7 @@ export default function AnalyzePage() {
             )}
           </button>
 
-          <p className="text-center text-cream-muted/40 text-xs">
+          <p className="text-center text-cream-muted text-xs">
             Secure payment via Stripe · One-time charge · No subscription
           </p>
         </form>

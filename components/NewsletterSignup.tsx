@@ -41,7 +41,7 @@ export default function NewsletterSignup({ source = 'crs-blog' }: { source?: str
           placeholder="your@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full bg-bg border border-cream-border rounded-lg px-3 py-2.5 text-cream text-sm placeholder:text-cream-muted/40 focus:outline-none focus:border-red-accent"
+          className="w-full bg-bg border border-cream-border rounded-lg px-3 py-2.5 text-cream text-sm placeholder:text-cream-muted focus:outline-none focus:border-red-accent"
         />
         <button
           type="submit"

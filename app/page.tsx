@@ -63,7 +63,7 @@ export default function HomePage() {
             response rate, and 5-star percentage — for you and up to 3 rivals.
           </p>
 
-          <p className="text-cream-muted/70 text-sm mb-10">
+          <p className="text-cream-muted text-sm mb-10">
             One-time report. Real data. Results in minutes.
           </p>
 
@@ -77,7 +77,7 @@ export default function HomePage() {
             </span>
           </Link>
 
-          <p className="mt-4 text-cream-muted/50 text-xs">
+          <p className="mt-4 text-cream-muted text-xs">
             No subscription. Instant access after payment.
           </p>
         </div>
@@ -153,7 +153,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t border-cream-border px-6 py-8 text-center">
-        <p className="text-cream-muted/40 text-xs">
+        <p className="text-cream-muted text-xs">
           © {new Date().getFullYear()} Competitor Review Spy · Powered by{' '}
           <a
             href="https://reviewreplyai.ca"

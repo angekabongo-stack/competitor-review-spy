@@ -27,7 +27,7 @@ export default function BlogPage() {
       <div className="max-w-7xl mx-auto px-6 py-16">
         {/* Header */}
         <div className="mb-12">
-          <nav className="text-cream-muted/50 text-xs mb-4">
+          <nav className="text-cream-muted text-xs mb-4">
             <Link href="/" className="hover:text-cream">Home</Link>
             <span className="mx-2">/</span>
             <span className="text-cream">Blog</span>
@@ -84,7 +84,7 @@ export default function BlogPage() {
       </div>
 
       <footer className="border-t border-cream-border px-6 py-8 mt-12 text-center">
-        <p className="text-cream-muted/40 text-xs">
+        <p className="text-cream-muted text-xs">
           © {new Date().getFullYear()} Competitor Review Spy ·{' '}
           <a href="https://reviewreplyai.ca" className="hover:text-red-accent transition-colors">
             Automate your Google review replies

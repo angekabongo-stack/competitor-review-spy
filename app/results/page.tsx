@@ -213,9 +213,9 @@ export default async function ResultsPage({ searchParams }: Props) {
                     </span>
                   </div>
                   <p className="text-cream-muted text-sm leading-relaxed line-clamp-3">
-                    {r.text || <em className="text-cream-muted/40">No text</em>}
+                    {r.text || <em className="text-cream-muted">No text</em>}
                   </p>
-                  <p className="text-cream-muted/50 text-xs mt-2">— {r.author_name}</p>
+                  <p className="text-cream-muted text-xs mt-2">— {r.author_name}</p>
                   {r.has_response && (
                     <span className="mt-2 inline-block text-[10px] bg-green-positive/20 text-green-positive px-1.5 py-0.5 rounded uppercase tracking-wide">
                       Responded
@@ -262,7 +262,7 @@ export default async function ResultsPage({ searchParams }: Props) {
             >
               Start with ReviewReplyAI →
             </a>
-            <p className="text-cream-muted/40 text-xs mt-3">
+            <p className="text-cream-muted text-xs mt-3">
               Free trial available · reviewreplyai.ca
             </p>
           </div>
@@ -271,7 +271,7 @@ export default async function ResultsPage({ searchParams }: Props) {
 
       {/* Footer */}
       <footer className="border-t border-cream-border px-6 py-8 mt-12 text-center">
-        <p className="text-cream-muted/40 text-xs">
+        <p className="text-cream-muted text-xs">
           © {new Date().getFullYear()} Competitor Review Spy · Questions?{' '}
           <a
             href="mailto:support@competitorreviewspy.com"

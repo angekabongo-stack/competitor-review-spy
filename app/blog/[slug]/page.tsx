@@ -91,7 +91,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
 
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Breadcrumb */}
-        <nav className="text-cream-muted/50 text-xs mb-8">
+        <nav className="text-cream-muted text-xs mb-8">
           <Link href="/" className="hover:text-cream">Home</Link>
           <span className="mx-2">/</span>
           <Link href="/blog" className="hover:text-cream">Blog</Link>
@@ -108,7 +108,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
               </span>
             </div>
             <h1 className="font-heading text-4xl md:text-5xl text-cream tracking-wide leading-tight mb-4">{post.title}</h1>
-            <div className="flex items-center gap-4 text-cream-muted/50 text-xs mb-10 border-b border-cream-border pb-6">
+            <div className="flex items-center gap-4 text-cream-muted text-xs mb-10 border-b border-cream-border pb-6">
               <span>{date}</span>
               <span>·</span>
               <span>{post.readTime} min read</span>
@@ -160,7 +160,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
       </div>
 
       <footer className="border-t border-cream-border px-6 py-8 mt-12 text-center">
-        <p className="text-cream-muted/40 text-xs">
+        <p className="text-cream-muted text-xs">
           © {new Date().getFullYear()} Competitor Review Spy ·{' '}
           <a href="https://reviewreplyai.ca" className="hover:text-red-accent transition-colors">
             Automate your Google review replies
