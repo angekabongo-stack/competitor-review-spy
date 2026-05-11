@@ -16,20 +16,27 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://competitor-review-spy.com'),
   title: 'Competitor Review Spy — See How Your Google Reviews Compare',
   description:
     'See exactly how your Google reviews stack up against competitors. Ratings, response rate, review volume. $9 one-time.',
+  alternates: {
+    canonical: 'https://competitor-review-spy.com',
+  },
   openGraph: {
     title: 'Competitor Review Spy — See How Your Google Reviews Compare',
     description:
       'See exactly how your Google reviews stack up against competitors. Ratings, response rate, review volume. $9 one-time.',
     type: 'website',
+    url: 'https://competitor-review-spy.com',
+    siteName: 'Competitor Review Spy',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Competitor Review Spy',
     description:
       'See exactly how your Google reviews stack up against competitors. $9 one-time.',
+    site: '@competitorreviewspy',
   },
 };
 

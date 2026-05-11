@@ -1,6 +1,15 @@
 import type { BusinessAnalysis, ReviewSample } from './types';
 
-const BASE = 'https://maps.googleapis.com/maps/api/place';
+// Uses the Places API (New) — https://developers.google.com/maps/documentation/places/web-service/overview
+// Enable "Places API (New)" in Google Cloud Console + ensure billing is active.
+
+const SEARCH_URL = 'https://places.googleapis.com/v1/places:searchText';
+const DETAIL_URL = 'https://places.googleapis.com/v1/places';
+
+const SEARCH_MASK =
+  'places.id,places.displayName,places.rating,places.userRatingCount,places.formattedAddress,places.reviews';
+const DETAIL_MASK =
+  'id,displayName,rating,userRatingCount,formattedAddress,reviews';
 
 function extractSearchQuery(url: string): string {
   try {
@@ -19,91 +28,110 @@ function extractSearchQuery(url: string): string {
   return url;
 }
 
-interface PlaceReview {
+interface NewPlaceReview {
   rating: number;
-  text: string;
-  author_name: string;
-  time: number;
-  relative_time_description: string;
-  // owner_response is not part of the official Places API schema
-  // but some responses include it
-  owner_response?: { text: string; time: number };
+  text?: { text: string };
+  authorAttribution?: { displayName: string };
+  relativePublishTimeDescription?: string;
+  publishTime?: string;
 }
 
-interface PlaceResult {
-  place_id: string;
-  name: string;
-  rating: number;
-  user_ratings_total: number;
-  formatted_address?: string;
-  reviews?: PlaceReview[];
+interface NewPlace {
+  id: string;
+  displayName?: { text: string };
+  rating?: number;
+  userRatingCount?: number;
+  formattedAddress?: string;
+  reviews?: NewPlaceReview[];
 }
 
-async function findPlaceId(query: string): Promise<string | null> {
-  const key = process.env.GOOGLE_PLACES_API_KEY!;
-  const res = await fetch(
-    `${BASE}/findplacefromtext/json?input=${encodeURIComponent(query)}&inputtype=textquery&fields=place_id&key=${key}`
-  );
-  const json = await res.json();
-  return json.candidates?.[0]?.place_id ?? null;
+async function searchPlace(query: string, key: string): Promise<string | null> {
+  try {
+    const res = await fetch(SEARCH_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Goog-Api-Key': key,
+        'X-Goog-FieldMask': 'places.id',
+      },
+      body: JSON.stringify({ textQuery: query }),
+    });
+    const json = await res.json();
+    if (!res.ok || json.error) {
+      console.error('Places searchText error:', json.error ?? json);
+      return null;
+    }
+    return json.places?.[0]?.id ?? null;
+  } catch (err) {
+    console.error('searchPlace fetch error:', err);
+    return null;
+  }
 }
 
-async function getPlaceDetails(placeId: string): Promise<PlaceResult | null> {
-  const key = process.env.GOOGLE_PLACES_API_KEY!;
-  const fields = 'place_id,name,rating,user_ratings_total,formatted_address,reviews';
-  const res = await fetch(
-    `${BASE}/details/json?place_id=${placeId}&fields=${fields}&key=${key}`
-  );
-  const json = await res.json();
-  if (json.status !== 'OK') return null;
-  return json.result as PlaceResult;
+async function getPlaceDetails(placeId: string, key: string): Promise<NewPlace | null> {
+  try {
+    const res = await fetch(`${DETAIL_URL}/${placeId}`, {
+      headers: {
+        'X-Goog-Api-Key': key,
+        'X-Goog-FieldMask': DETAIL_MASK,
+      },
+    });
+    const json = await res.json();
+    if (!res.ok || json.error) {
+      console.error('Places details error:', json.error ?? json);
+      return null;
+    }
+    return json as NewPlace;
+  } catch (err) {
+    console.error('getPlaceDetails fetch error:', err);
+    return null;
+  }
 }
 
-function computeMetrics(
-  result: PlaceResult,
-  url: string
-): BusinessAnalysis {
-  const reviews = result.reviews ?? [];
+function computeMetrics(place: NewPlace, url: string): BusinessAnalysis {
+  const reviews = place.reviews ?? [];
 
   const fiveStarCount = reviews.filter((r) => r.rating === 5).length;
-  const responseCount = reviews.filter((r) => !!r.owner_response).length;
-
   const five_star_rate =
     reviews.length > 0 ? Math.round((fiveStarCount / reviews.length) * 100) : 0;
-  const response_rate =
-    reviews.length > 0 ? Math.round((responseCount / reviews.length) * 100) : 0;
 
-  // Estimate reviews/month from oldest timestamp in sample vs now
+  // Owner responses not available in Places API (New)
+  const response_rate = 0;
+
+  // Estimate reviews/month from publish timestamps
   let reviews_per_month = 0;
-  if (reviews.length >= 2) {
-    const oldest = Math.min(...reviews.map((r) => r.time));
-    const newest = Math.max(...reviews.map((r) => r.time));
-    const spanMonths = Math.max((newest - oldest) / (30 * 24 * 3600), 0.5);
-    // scale total reviews by the sample span
-    reviews_per_month = Math.round(result.user_ratings_total / Math.max(spanMonths, 1));
-    // cap at a reasonable value
+  const timestamps = reviews
+    .map((r) => (r.publishTime ? new Date(r.publishTime).getTime() : 0))
+    .filter(Boolean);
+
+  if (timestamps.length >= 2) {
+    const oldest = Math.min(...timestamps);
+    const newest = Math.max(...timestamps);
+    const spanMonths = Math.max((newest - oldest) / (30 * 24 * 3600 * 1000), 0.5);
+    reviews_per_month = Math.round(
+      (place.userRatingCount ?? 0) / Math.max(spanMonths, 1)
+    );
     reviews_per_month = Math.min(reviews_per_month, 500);
-  } else if (result.user_ratings_total > 0) {
-    // rough fallback: assume business has been around ~2 years
-    reviews_per_month = Math.round(result.user_ratings_total / 24);
+  } else if ((place.userRatingCount ?? 0) > 0) {
+    reviews_per_month = Math.round((place.userRatingCount ?? 0) / 24);
   }
 
   const reviews_sample: ReviewSample[] = reviews.map((r) => ({
     rating: r.rating,
-    text: r.text,
-    author_name: r.author_name,
-    time: r.time,
-    has_response: !!r.owner_response,
-    relative_time_description: r.relative_time_description,
+    text: r.text?.text ?? '',
+    author_name: r.authorAttribution?.displayName ?? 'Anonymous',
+    time: r.publishTime ? new Date(r.publishTime).getTime() / 1000 : 0,
+    has_response: false,
+    relative_time_description: r.relativePublishTimeDescription ?? '',
   }));
 
   return {
-    name: result.name,
+    name: place.displayName?.text ?? 'Unknown Business',
     url,
-    place_id: result.place_id,
-    formatted_address: result.formatted_address ?? '',
-    total_reviews: result.user_ratings_total ?? 0,
-    avg_rating: result.rating ?? 0,
+    place_id: place.id,
+    formatted_address: place.formattedAddress ?? '',
+    total_reviews: place.userRatingCount ?? 0,
+    avg_rating: place.rating ?? 0,
     response_rate,
     reviews_per_month,
     five_star_rate,
@@ -112,12 +140,21 @@ function computeMetrics(
 }
 
 export async function fetchPlaceData(url: string): Promise<BusinessAnalysis | null> {
+  const key = process.env.GOOGLE_PLACES_API_KEY;
+  if (!key) {
+    console.error('GOOGLE_PLACES_API_KEY is not set');
+    return null;
+  }
+
   try {
     const query = extractSearchQuery(url);
-    const placeId = await findPlaceId(query);
-    if (!placeId) return null;
+    const placeId = await searchPlace(query, key);
+    if (!placeId) {
+      console.warn('No place found for query:', query);
+      return null;
+    }
 
-    const details = await getPlaceDetails(placeId);
+    const details = await getPlaceDetails(placeId, key);
     if (!details) return null;
 
     return computeMetrics(details, url);
