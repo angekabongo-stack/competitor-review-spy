@@ -34,6 +34,7 @@ export const metadata: Metadata = {
     'google review audit',
   ],
   robots: { index: true, follow: true },
+  verification: { google: 'jP5kMrWijNgRXvLATGXdjEBCaWsJWOobJlwc9v1zo7o' },
   alternates: { canonical: 'https://competitor-review-spy.com' },
   openGraph: {
     title: 'Competitor Review Spy — See How Your Google Reviews Compare',
