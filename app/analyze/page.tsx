@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
@@ -51,6 +51,14 @@ function isValidEmail(val: string) {
 }
 
 export default function AnalyzePage() {
+  return (
+    <Suspense>
+      <AnalyzeForm />
+    </Suspense>
+  );
+}
+
+function AnalyzeForm() {
   const searchParams = useSearchParams();
   const [form, setForm] = useState<FormState>(EMPTY);
   const [loading, setLoading] = useState(false);
