@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 const INDUSTRIES = [
@@ -50,9 +51,18 @@ function isValidEmail(val: string) {
 }
 
 export default function AnalyzePage() {
+  const searchParams = useSearchParams();
   const [form, setForm] = useState<FormState>(EMPTY);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Pre-fill email from spy-report landing page redirect
+  useEffect(() => {
+    const emailParam = searchParams.get('email');
+    if (emailParam) {
+      setForm((prev) => ({ ...prev, email: emailParam }));
+    }
+  }, [searchParams]);
 
   function update(field: keyof FormState) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -203,11 +213,12 @@ export default function AnalyzePage() {
               value={form.industry}
               onChange={update('industry')}
               required
-              className="w-full bg-cream-faint border border-cream-border rounded-lg px-4 py-3 text-cream focus:outline-none focus:border-red-accent transition-colors text-sm appearance-none"
+              className="w-full bg-bg border border-cream-border rounded-lg px-4 py-3 text-cream focus:outline-none focus:border-red-accent transition-colors text-sm appearance-none"
+              style={{ colorScheme: 'dark' }}
             >
-              <option value="">Select your industry…</option>
+              <option value="" className="bg-bg text-cream-muted">Select your industry…</option>
               {INDUSTRIES.map((ind) => (
-                <option key={ind} value={ind}>
+                <option key={ind} value={ind} className="bg-bg text-cream">
                   {ind}
                 </option>
               ))}
