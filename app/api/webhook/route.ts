@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       })
       .eq('id', analysisId);
 
-    // Send emails
+    // Send report emails
     if (businessData) {
       await sendResultsEmail(record.email, businessData, filteredCompetitors);
       await sendFollowUpEmail(record.email, businessData.name);
@@ -70,6 +70,25 @@ export async function POST(req: NextRequest) {
         .update({ status: 'email_sent' })
         .eq('id', analysisId);
     }
+
+    // Enroll buyer in 60-day nurture + ReviewReply AI upsell sequence (day 1)
+    const firstEmailAt = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000);
+    await supabase
+      .from('email_sequences')
+      .upsert(
+        { email: record.email, list_type: 'buyers', next_send_at: firstEmailAt.toISOString() },
+        { onConflict: 'email,list_type' }
+      )
+      .then(({ error }) => {
+        if (error) console.warn('email_sequences enroll buyers:', error.message);
+      });
+
+    // Remove from leads sequence if they were a lead first
+    await supabase
+      .from('email_sequences')
+      .update({ unsubscribed: true })
+      .eq('email', record.email)
+      .eq('list_type', 'leads');
   }
 
   return NextResponse.json({ received: true });

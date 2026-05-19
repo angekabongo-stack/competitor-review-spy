@@ -13,5 +13,11 @@
     "app/results/page.tsx": {
       "maxDuration": 30
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/drip-emails",
+      "schedule": "0 14 * * *"
+    }
+  ]
 }

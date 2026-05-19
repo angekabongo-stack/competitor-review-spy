@@ -85,10 +85,22 @@ export async function POST(req: NextRequest) {
     // Add to Brevo for fb-ad leads so Brevo automation sequences can take over
     if (resolvedSource === 'fb-ad') {
       await addToBrevo(email, resolvedSource);
+
+      // Enroll in 60-day leads drip sequence — first email sends on day 2
+      const firstEmailAt = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000);
+      await supabase
+        .from('email_sequences')
+        .upsert(
+          { email, list_type: 'leads', next_send_at: firstEmailAt.toISOString() },
+          { onConflict: 'email,list_type' }
+        )
+        .then(({ error }) => {
+          if (error) console.warn('email_sequences enroll leads:', error.message);
+        });
     }
 
     const { subject, html } = WELCOME_EMAILS[resolvedSource] ?? WELCOME_EMAILS.default;
-    await resend.emails.send({ from: FROM, to: email, subject, html });
+    await resend.emails.send({ from: `ReviewReply AI <${FROM}>`, to: email, subject, html });
 
     return NextResponse.json({ ok: true });
   } catch (err) {
