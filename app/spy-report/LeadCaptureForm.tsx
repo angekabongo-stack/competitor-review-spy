@@ -1,29 +1,24 @@
 'use client';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function LeadCaptureForm() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
-  const router = useRouter();
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email) return;
+    if (!email || status === 'loading') return;
     setStatus('loading');
-    try {
-      // Fire-and-forget — send welcome email in background, don't block redirect
-      fetch('/api/newsletter/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'fb-ad' }),
-      }).catch(() => {/* non-fatal */});
 
-      // Redirect immediately to the report page with email pre-filled
-      router.push(`/analyze?email=${encodeURIComponent(email)}`);
-    } catch {
-      setStatus('error');
-    }
+    // Fire welcome email in background — non-blocking
+    fetch('/api/newsletter/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, source: 'fb-ad' }),
+    }).catch(() => {});
+
+    // Hard redirect so email is pre-filled on the report page
+    window.location.href = `/analyze?email=${encodeURIComponent(email)}`;
   }
 
   return (
