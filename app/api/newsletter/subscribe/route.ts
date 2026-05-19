@@ -76,13 +76,11 @@ export async function POST(req: NextRequest) {
 
     const resolvedSource = source ?? 'crs-blog';
 
-    const { error } = await supabase
+    // Store in Supabase — non-fatal if table missing or duplicate
+    const { error: dbError } = await supabase
       .from('newsletter_subscribers')
       .upsert({ email, source: resolvedSource }, { onConflict: 'email,source' });
-
-    if (error && !error.message.includes('duplicate')) {
-      return NextResponse.json({ error: 'Failed to subscribe' }, { status: 500 });
-    }
+    if (dbError) console.warn('newsletter_subscribers upsert:', dbError.message);
 
     // Add to Brevo for fb-ad leads so Brevo automation sequences can take over
     if (resolvedSource === 'fb-ad') {
