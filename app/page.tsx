@@ -16,19 +16,6 @@ const HOW_IT_WORKS = [
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-bg">
-      {/* Nav */}
-      <nav className="border-b border-cream-border px-6 py-4 flex items-center justify-between max-w-7xl mx-auto">
-        <span className="font-heading text-red-accent tracking-widest text-xl">
-          REVIEW SPY
-        </span>
-        <Link
-          href="/analyze"
-          className="text-sm font-semibold text-cream-muted hover:text-cream transition-colors"
-        >
-          Get Report →
-        </Link>
-      </nav>
-
       {/* Hero */}
       <section className="relative overflow-hidden">
         {/* Grid background */}
@@ -101,14 +88,103 @@ export default function HomePage() {
         </p>
       </section>
 
-      {/* Sample report */}
+      {/* What you'll get */}
       <section className="max-w-5xl mx-auto px-6 py-12">
         <h2 className="font-heading text-4xl md:text-5xl text-cream tracking-wide mb-2 text-center">
           Here&apos;s what you&apos;ll get
         </h2>
-        <p className="text-cream-muted text-center mb-8">
-          Real metrics. No fluff. No upsells buried in the data.
+        <p className="text-cream-muted text-center mb-10">
+          8 sections of live, real-data intelligence — built from your actual Google reviews.
         </p>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+          {/* 1 */}
+          <div className="bg-cream-faint border border-cream-border rounded-xl p-5">
+            <div className="font-heading text-3xl text-red-accent mb-1">74</div>
+            <p className="text-cream font-semibold text-sm mb-1">Review Health Score</p>
+            <p className="text-cream-muted text-xs leading-relaxed">
+              A single 0–100 score measuring response rate, star rating, review volume, and 5-star share.
+            </p>
+          </div>
+          {/* 2 */}
+          <div className="bg-cream-faint border border-cream-border rounded-xl p-5">
+            <div className="flex gap-1 mb-2 flex-wrap">
+              <span className="text-[10px] px-2 py-0.5 rounded border border-yellow-400/40 bg-yellow-400/10 text-yellow-400 font-semibold">#2 Response Rate</span>
+              <span className="text-[10px] px-2 py-0.5 rounded border border-red-accent/40 bg-red-accent/10 text-red-accent font-semibold">#3 Star Rating</span>
+            </div>
+            <p className="text-cream font-semibold text-sm mb-1">Competitive Rank Badges</p>
+            <p className="text-cream-muted text-xs leading-relaxed">
+              See exactly where you rank vs. every competitor across 4 key review metrics.
+            </p>
+          </div>
+          {/* 3 */}
+          <div className="bg-cream-faint border border-cream-border rounded-xl p-5">
+            <div className="flex gap-2 mb-2 text-xs">
+              <span className="text-green-positive font-bold">4.7 ★</span>
+              <span className="text-cream-muted">vs</span>
+              <span className="text-red-accent font-bold">4.2 ★</span>
+            </div>
+            <p className="text-cream font-semibold text-sm mb-1">Side-by-Side Breakdown</p>
+            <p className="text-cream-muted text-xs leading-relaxed">
+              Full comparison table: reviews, avg rating, response rate, monthly velocity, and 5-star rate.
+            </p>
+          </div>
+          {/* 4 */}
+          <div className="bg-cream-faint border border-cream-border rounded-xl p-5">
+            <div className="text-red-accent text-xs font-bold uppercase tracking-widest mb-2">3 unanswered ★★☆☆☆</div>
+            <p className="text-cream font-semibold text-sm mb-1">Unanswered Negative Reviews</p>
+            <p className="text-cream-muted text-xs leading-relaxed">
+              Every low-star review you haven&apos;t replied to — with the exact text so you can act today.
+            </p>
+          </div>
+          {/* 5 */}
+          <div className="bg-cream-faint border border-cream-border rounded-xl p-5">
+            <div className="font-heading text-2xl text-cream mb-1">12 replies → 90%</div>
+            <p className="text-cream font-semibold text-sm mb-1">Catch-Up Calculator</p>
+            <p className="text-cream-muted text-xs leading-relaxed">
+              Exactly how many replies you need to hit the 90% threshold where Google Maps visibility jumps.
+            </p>
+          </div>
+          {/* 6 */}
+          <div className="bg-cream-faint border border-cream-border rounded-xl p-5">
+            <div className="flex gap-3 mb-2">
+              <span className="font-heading text-xl text-green-positive">+23%</span>
+              <span className="font-heading text-xl text-green-positive">+18%</span>
+            </div>
+            <p className="text-cream font-semibold text-sm mb-1">Revenue Impact Estimate</p>
+            <p className="text-cream-muted text-xs leading-relaxed">
+              Projected uplift in profile views, direction requests, and monthly enquiries if you close the gap.
+            </p>
+          </div>
+          {/* 7 */}
+          <div className="bg-cream-faint border border-cream-border rounded-xl p-5">
+            <div className="space-y-1 mb-2">
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 rounded-full bg-red-accent flex items-center justify-center text-[9px] text-white font-bold">1</span>
+                <span className="text-cream-muted text-xs">Reply to 3 negative reviews</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 rounded-full bg-yellow-400 flex items-center justify-center text-[9px] text-black font-bold">2</span>
+                <span className="text-cream-muted text-xs">Ask top 10 customers for reviews</span>
+              </div>
+            </div>
+            <p className="text-cream font-semibold text-sm mb-1">Priority Action Plan</p>
+            <p className="text-cream-muted text-xs leading-relaxed">
+              Up to 4 numbered steps ranked by urgency — critical, high, or medium — with a timeframe for each.
+            </p>
+          </div>
+          {/* 8 */}
+          <div className="bg-cream-faint border border-cream-border rounded-xl p-5">
+            <div className="text-xs text-green-positive font-semibold uppercase tracking-widest mb-2">Next step</div>
+            <p className="text-cream font-semibold text-sm mb-1">Gap Analysis + AI Reply CTA</p>
+            <p className="text-cream-muted text-xs leading-relaxed">
+              Where each gap costs you visibility and revenue — plus a direct link to automate replies with ReviewReplyAI.
+            </p>
+          </div>
+        </div>
+
+        {/* Sample data preview */}
+        <p className="text-cream-muted text-xs text-center uppercase tracking-widest mb-4">Sample data preview</p>
         <SampleReport />
       </section>
 
