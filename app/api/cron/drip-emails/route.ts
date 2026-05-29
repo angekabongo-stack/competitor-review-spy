@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { Resend } from 'resend';
 import { BUYERS_SEQUENCE, LEADS_SEQUENCE, type ListType } from '@/lib/email-sequences';
+import { sendBrevoEmail } from '@/lib/brevo';
+import { getPoolEmail } from '@/lib/email-sequences/facebook-pool';
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 const FROM = process.env.RESEND_FROM_EMAIL ?? 'noreply@competitor-review-spy.com';
@@ -90,5 +92,41 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ sent, failed, total: subscribers.length });
+  // --- Facebook scheduled emails (via Brevo) ---
+  const { data: fbQueue } = await supabase
+    .from('facebook_scheduled_emails')
+    .select('id, lead_id, email_index, facebook_leads(email, name)')
+    .eq('status', 'pending')
+    .lte('send_at', now.toISOString());
+
+  let fbSent = 0;
+  let fbFailed = 0;
+
+  for (const row of fbQueue ?? []) {
+    const lead = row.facebook_leads as { email: string; name: string } | null;
+    if (!lead) continue;
+
+    const email = getPoolEmail(row.email_index);
+
+    try {
+      await sendBrevoEmail(lead.email, lead.name ?? lead.email, email.subject, email.html);
+      await supabase
+        .from('facebook_scheduled_emails')
+        .update({ status: 'sent', sent_at: now.toISOString() })
+        .eq('id', row.id);
+      fbSent++;
+    } catch (err) {
+      console.error(`drip-emails: facebook send failed for ${lead.email}`, err);
+      await supabase
+        .from('facebook_scheduled_emails')
+        .update({ status: 'failed' })
+        .eq('id', row.id);
+      fbFailed++;
+    }
+  }
+
+  return NextResponse.json({
+    resend: { sent, failed, total: subscribers.length },
+    brevo: { sent: fbSent, failed: fbFailed, total: (fbQueue ?? []).length },
+  });
 }

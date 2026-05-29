@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { sendBrevoEmail } from '@/lib/brevo';
-import { FACEBOOK_LEADS_SEQUENCE } from '@/lib/email-sequences/facebook-leads';
+import { FACEBOOK_POOL } from '@/lib/email-sequences/facebook-pool';
 
 function isAuthorized(req: NextRequest): boolean {
   const auth = req.headers.get('authorization');
   return auth === `Bearer ${process.env.CRON_SECRET}`;
+}
+
+// Returns the next Mon, Wed, Fri at 14:00 UTC after a Sunday run.
+function upcomingSlots(): Date[] {
+  const now = new Date();
+  return [1, 3, 5].map((offset) => {
+    const d = new Date(now);
+    d.setUTCDate(now.getUTCDate() + offset);
+    d.setUTCHours(14, 0, 0, 0);
+    return d;
+  });
 }
 
 export async function GET(req: NextRequest) {
@@ -13,15 +23,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const now = new Date();
-
-  // Fetch leads with a pending email due now or in the past
+  // Fetch all active leads
   const { data: leads, error } = await supabase
     .from('facebook_leads')
-    .select('*')
-    .eq('unsubscribed', false)
-    .eq('finished', false)
-    .lte('next_send_at', now.toISOString());
+    .select('id, email, name, last_scheduled_index')
+    .eq('unsubscribed', false);
 
   if (error) {
     console.error('facebook-sequence cron error:', error.message);
@@ -29,53 +35,39 @@ export async function GET(req: NextRequest) {
   }
 
   if (!leads || leads.length === 0) {
-    return NextResponse.json({ sent: 0, message: 'No emails due' });
+    return NextResponse.json({ scheduled: 0, message: 'No active leads' });
   }
 
-  let sent = 0;
-  let failed = 0;
+  const slots = upcomingSlots(); // [Mon, Wed, Fri] at 14:00 UTC
+  let scheduled = 0;
 
   for (const lead of leads) {
-    // Find the next unsent email in the sequence
-    const nextEmail = FACEBOOK_LEADS_SEQUENCE.find(
-      (e) => e.day > (lead.last_sent_day ?? -1)
-    );
+    const startIndex = (lead.last_scheduled_index ?? -1) + 1;
 
-    if (!nextEmail) {
-      await supabase
-        .from('facebook_leads')
-        .update({ finished: true, next_send_at: null })
-        .eq('id', lead.id);
+    const rows = slots.map((sendAt, i) => ({
+      lead_id: lead.id,
+      email_index: (startIndex + i) % FACEBOOK_POOL.length,
+      send_at: sendAt.toISOString(),
+      status: 'pending',
+    }));
+
+    const { error: insertErr } = await supabase
+      .from('facebook_scheduled_emails')
+      .insert(rows);
+
+    if (insertErr) {
+      console.error(`schedule error for ${lead.email}:`, insertErr.message);
       continue;
     }
 
-    try {
-      await sendBrevoEmail(lead.email, lead.name ?? lead.email, nextEmail.subject, nextEmail.html);
+    // Advance last_scheduled_index by 3
+    await supabase
+      .from('facebook_leads')
+      .update({ last_scheduled_index: startIndex + slots.length - 1 })
+      .eq('id', lead.id);
 
-      // Schedule the next email
-      const afterThis = FACEBOOK_LEADS_SEQUENCE.find((e) => e.day > nextEmail.day);
-      const daysUntilNext = afterThis ? afterThis.day - nextEmail.day : null;
-      const nextSendAt = daysUntilNext
-        ? new Date(Date.now() + daysUntilNext * 24 * 60 * 60 * 1000).toISOString()
-        : null;
-
-      await supabase
-        .from('facebook_leads')
-        .update({
-          last_sent_day: nextEmail.day,
-          last_sent_at: now.toISOString(),
-          sequence_step: (lead.sequence_step ?? 0) + 1,
-          next_send_at: nextSendAt,
-          finished: nextSendAt === null,
-        })
-        .eq('id', lead.id);
-
-      sent++;
-    } catch (err) {
-      console.error(`facebook-sequence: failed for ${lead.email}`, err);
-      failed++;
-    }
+    scheduled += slots.length;
   }
 
-  return NextResponse.json({ sent, failed, total: leads.length });
+  return NextResponse.json({ leads: leads.length, scheduled });
 }
