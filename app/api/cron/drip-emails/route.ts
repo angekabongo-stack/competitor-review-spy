@@ -103,7 +103,7 @@ export async function GET(req: NextRequest) {
   let fbFailed = 0;
 
   for (const row of fbQueue ?? []) {
-    const lead = row.facebook_leads as { email: string; name: string } | null;
+    const lead = row.facebook_leads as unknown as { email: string; name: string } | null;
     if (!lead) continue;
 
     const email = getPoolEmail(row.email_index);
